@@ -1,5 +1,6 @@
 package com.casino.josh.servermonitor
 
+import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
 import android.content.Context
@@ -34,6 +35,13 @@ class NewAppWidget : AppWidgetProvider() {
     override fun onEnabled(context: Context) {
         // Enter relevant functionality for when the first widget is created
         // Construct the RemoteViews object
+        val views = RemoteViews(context!!.packageName, R.layout.new_app_widget)
+
+        val intent = Intent(context, NewAppWidget::class.java)
+        intent.action = "button_clicked"
+        val pendingIntent = PendingIntent.getService(context, 0, intent, 0)
+
+        views.setOnClickPendingIntent(R.id.update_data, pendingIntent)
     }
 
     override fun onDisabled(context: Context) {
@@ -43,9 +51,8 @@ class NewAppWidget : AppWidgetProvider() {
     override fun onReceive(context: Context?, intent: Intent?) {
         super.onReceive(context, intent)
 
-        if (intent != null) {
+        if(intent!!.action == "button_clicked"){
             val views = RemoteViews(context!!.packageName, R.layout.new_app_widget)
-
 
             val preferences = PreferenceManager.getDefaultSharedPreferences(context)
             val ip = preferences.getString("ip_address", "")
@@ -54,11 +61,11 @@ class NewAppWidget : AppWidgetProvider() {
             val data = executeRemoteCommand("root", pass, ip)
 
             views.setTextViewText(R.id.appwidget_text, data)
+            views.setTextViewText(R.id.appwidget_ip_address, ip)
 
             var appNum = ComponentName(context, this::class.java)
 
             AppWidgetManager.getInstance(context).updateAppWidget(appNum, views)
-
         }
     }
 
@@ -112,7 +119,9 @@ class NewAppWidget : AppWidgetProvider() {
             val data = executeRemoteCommand("root", pass, ip)
 
             views.setTextViewText(R.id.appwidget_text, data)
+            views.setTextViewText(R.id.appwidget_ip_address, ip)
 
+            AppWidgetManager.getInstance(context).updateAppWidget(appWidgetId, views)
         }
     }
 }

@@ -5,6 +5,17 @@
     android:padding="@dimen/widget_margin">
 
     <TextView
+        android:id="@+id/appwidget_ip_address"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="8dp"
+        android:contentDescription="@string/appwidget_text"
+        android:textColor="#01d2f7"
+        android:textSize="24sp"
+        android:textStyle="bold|italic" />
+
+    <TextView
         android:id="@+id/appwidget_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -13,6 +24,19 @@
         android:layout_margin="8dp"
         android:contentDescription="@string/appwidget_text"
         android:textColor="#ffffff"
+        android:textSize="24sp"
+        android:textStyle="bold|italic" />
+
+    <Button
+        android:id="@+id/update_data"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/appwidget_text"
+        android:layout_margin="8dp"
+        android:contentDescription="@string/appwidget_text"
+        android:textColor="#ffffff"
+        android:text="ping"
         android:textSize="24sp"
         android:textStyle="bold|italic" />
 
