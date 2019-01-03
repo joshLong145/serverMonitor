@@ -7,9 +7,15 @@ import android.content.Intent
 import android.preference.PreferenceManager
 import com.jcraft.jsch.JSch
 import android.widget.RemoteViews
+import android.widget.TextView
 import com.jcraft.jsch.ChannelExec
 import java.io.ByteArrayOutputStream
 import java.util.*
+import android.content.ComponentName
+
+
+
+
 
 /**
  * Implementation of App Widget functionality.
@@ -19,6 +25,7 @@ class NewAppWidget : AppWidgetProvider() {
 
     override fun onUpdate(context: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray) {
         // There may be multiple widgets active, so update all of them
+        var test = 1
         for (appWidgetId in appWidgetIds) {
             updateAppWidget(context, appWidgetManager, appWidgetId)
         }
@@ -26,6 +33,7 @@ class NewAppWidget : AppWidgetProvider() {
 
     override fun onEnabled(context: Context) {
         // Enter relevant functionality for when the first widget is created
+        // Construct the RemoteViews object
     }
 
     override fun onDisabled(context: Context) {
@@ -36,8 +44,21 @@ class NewAppWidget : AppWidgetProvider() {
         super.onReceive(context, intent)
 
         if (intent != null) {
-            if (intent.action == Intent.ACTION_SCREEN_ON) {
-            }
+            val views = RemoteViews(context!!.packageName, R.layout.new_app_widget)
+
+
+            val preferences = PreferenceManager.getDefaultSharedPreferences(context)
+            val ip = preferences.getString("ip_address", "")
+            val pass = preferences.getString("password", "")
+
+            val data = executeRemoteCommand("root", pass, ip)
+
+            views.setTextViewText(R.id.appwidget_text, data)
+
+            var appNum = ComponentName(context, this::class.java)
+
+            AppWidgetManager.getInstance(context).updateAppWidget(appNum, views)
+
         }
     }
 
@@ -64,7 +85,8 @@ class NewAppWidget : AppWidgetProvider() {
             sshChannel.outputStream = outputStream
 
             // Execute command.
-            sshChannel.setCommand("ls")
+            // mpstat command to get current cpu usage
+            sshChannel.setCommand("cat /proc/loadavg")
             sshChannel.connect()
 
             // Sleep needed in order to wait long enough to get result back.
@@ -73,7 +95,8 @@ class NewAppWidget : AppWidgetProvider() {
 
             session.disconnect()
 
-            return outputStream.toString()
+            var serialCommandData = outputStream.toString()
+            return serialCommandData
         }
 
         internal fun updateAppWidget(context: Context, appWidgetManager: AppWidgetManager,
@@ -81,8 +104,6 @@ class NewAppWidget : AppWidgetProvider() {
             // Construct the RemoteViews object
             val views = RemoteViews(context.packageName, R.layout.new_app_widget)
 
-            // Instruct the widget manager to update the widget
-            appWidgetManager.updateAppWidget(appWidgetId, views)
 
             val preferences = PreferenceManager.getDefaultSharedPreferences(context)
             val ip = preferences.getString("ip_address", "")
