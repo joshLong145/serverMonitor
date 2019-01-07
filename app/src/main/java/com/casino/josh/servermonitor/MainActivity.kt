@@ -25,6 +25,20 @@ class MainActivity : AppCompatActivity() {
 
         val policy = StrictMode.ThreadPolicy.Builder().permitAll().build()
         StrictMode.setThreadPolicy(policy)
+
+        val preferences = PreferenceManager.getDefaultSharedPreferences(this)
+
+        val ip = preferences.getString("ip_address", "")
+        val pass = preferences.getString("password", "")
+
+        var ipComp = findViewById<EditText>(R.id.ip)
+        var passComp = findViewById<EditText>(R.id.password)
+
+        if(ip != "" && pass != "") {
+            ipComp.setText(ip)
+            passComp.setText(pass)
+        }
+
     }
 
 
