@@ -77,6 +77,11 @@ class NewAppWidget : AppWidgetProvider() {
                 if(attr.contains("online") || attr.contains("offline")){
                     dataStream.append(attr)
                     dataStream.append("\n")
+                }else{
+                    // if there is no way to parse the first line then return the whole string back
+                    // this will be changed, doing this to see the kind of data being given to
+                    // the function.
+                    return serialStream
                 }
             }
 
