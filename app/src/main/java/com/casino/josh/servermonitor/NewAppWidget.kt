@@ -45,7 +45,7 @@ class NewAppWidget : AppWidgetProvider() {
 
         val data = executeRemoteCommand("root", pass, ip)
 
-        views.setTextViewText(R.id.appwidget_text, data)
+        views.setTextViewText(R.id.appwidget_text, data[0])
         views.setTextViewText(R.id.appwidget_ip_address, ip)
 
         var widgetNum = ComponentName(context, this::class.java)
@@ -65,7 +65,7 @@ class NewAppWidget : AppWidgetProvider() {
 
     companion object {
 
-        private fun parsePMData(serialStream: String) : String {
+        private fun parsePMData(serialStream : String) : String{
             // split on spaces, we dont care about the number since
             // the upper bound is relatively small ( < 100 )
             var attributes = serialStream.split(" ")
@@ -93,6 +93,12 @@ class NewAppWidget : AppWidgetProvider() {
                 if(attr.contains(".")){
                     dataStream.append(attr)
                 }
+
+                if(attr.contains("MB")) {
+                    dataStream.append(" MB")
+                }else if(attr.contains("GB")){
+                    dataStream.append(" GB")
+                }
             }
 
             return dataStream.toString()
@@ -101,7 +107,7 @@ class NewAppWidget : AppWidgetProvider() {
         private fun executeRemoteCommand(username: String,
                                         password: String,
                                         hostname: String,
-                                        port: Int = 22): String {
+                                        port: Int = 22) : List<String> {
 
             val conn = SshConnectionUtility()
 
@@ -116,9 +122,10 @@ class NewAppWidget : AppWidgetProvider() {
             val data = conn.getData()
 
             // Data parsed from bash grep chain server side.
-            var outputData = parsePMData(data)
+            // TODO: abstract so other functionality other than pm2 data parsing can be utilized.
+            data[0] = parsePMData(data[0])
 
-            return outputData
+            return data
         }
 
         internal fun updateAppWidget(context: Context, appWidgetManager: AppWidgetManager,
@@ -133,8 +140,10 @@ class NewAppWidget : AppWidgetProvider() {
 
             val data = executeRemoteCommand("root", pass, ip)
 
-            views.setTextViewText(R.id.appwidget_text, data)
+            views.setTextViewText(R.id.appwidget_text, data[0])
             views.setTextViewText(R.id.appwidget_ip_address, ip)
+            views.setTextViewText(R.id.appwidget_logs, data[1])
+            views.setTextViewText(R.id.appwidget_log_header, "Last log entry:")
 
             AppWidgetManager.getInstance(context).updateAppWidget(appWidgetId, views)
         }

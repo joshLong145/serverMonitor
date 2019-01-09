@@ -20,11 +20,35 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
+        android:layout_below="@id/appwidget_ip_address"
         android:layout_margin="8dp"
         android:contentDescription="@string/appwidget_text"
         android:textColor="#ffffff"
-        android:textSize="24sp"
+        android:textSize="18sp"
+        android:textStyle="bold|italic" />
+
+    <TextView
+        android:id="@+id/appwidget_log_header"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_below="@id/appwidget_text"
+        android:layout_margin="8dp"
+        android:contentDescription="@string/appwidget_text"
+        android:textColor="#01d2f7"
+        android:textSize="18sp"
+        android:textStyle="bold|italic" />
+
+    <TextView
+        android:id="@+id/appwidget_logs"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_below="@id/appwidget_log_header"
+        android:layout_margin="8dp"
+        android:contentDescription="@string/appwidget_text"
+        android:textColor="#ffffff"
+        android:textSize="18sp"
         android:textStyle="bold|italic" />
 
 </RelativeLayout>

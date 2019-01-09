@@ -11,7 +11,7 @@ class SshConnectionUtility() :  Runnable {
     private var hostname : String = ""
     private var password : String = ""
     private var port : Int = 0
-    private var outputData : String = ""
+    private var outputData : MutableList<String> = mutableListOf()
 
     fun initConnectionParams(user : String, host : String, pass : String, port : Int = 22) {
         username = user
@@ -20,18 +20,13 @@ class SshConnectionUtility() :  Runnable {
         this.port = port
     }
 
-    fun getData() : String {
+    fun getData() : MutableList<String> {
         return outputData
     }
 
-    fun isStopped(): Boolean {
-        return Thread.currentThread().isInterrupted() // Version 2
-    }
-
-    fun shutdown() {
-        Thread.currentThread().interrupt(); // Version 2
-    }
-
+    /**
+     * Overloaded function called when thread,start() is called.
+     */
     override fun run() {
         val jsch = JSch()
         val session = jsch.getSession(username, hostname, port)
@@ -44,23 +39,34 @@ class SshConnectionUtility() :  Runnable {
 
         session.connect()
 
-        // Create SSH Channel.
-        val sshChannel = session.openChannel("exec") as ChannelExec
-        val outputStream = ByteArrayOutputStream()
-        sshChannel.outputStream = outputStream
+        // predefined commands for pm2 logistics based on my personal needs.
+        val commands = arrayOf("pm2 status | grep API | tr -d '\\200-\\377'",
+                                "tail -n 1 < ~/.pm2/logs/API-out.log")
 
-        // Execute command.
-        // Command is a grep and replace on pm2 status information
-        // for custom pm2 process.
-        sshChannel.setCommand("pm2 status | grep API | tr -d '\\200-\\377'")
-        sshChannel.connect()
+        // Run all commands within the commands array.
+        // TODO: abstract commands to shared prefs
+        for(command : String in commands) {
+            // Create SSH Channel.
+            val sshChannel = session.openChannel("exec") as ChannelExec
+            val outputStream = ByteArrayOutputStream()
+            sshChannel.outputStream = outputStream
 
-        // Sleep needed in order to wait long enough to get result back.
-        Thread.sleep(1_000)
-        sshChannel.disconnect()
+            // Execute command.
+            // Command is a grep and replace on pm2 status information
+            // for custom pm2 process.
+            sshChannel.setCommand(command)
+            sshChannel.connect()
+
+            // Sleep needed in order to wait long enough to get result back.
+            Thread.sleep(1_000)
+
+            // Disconnect from the ssh session after we are done.
+            sshChannel.disconnect()
+
+            outputData.add(outputStream.toString())
+        }
 
         session.disconnect()
 
-        outputData = outputStream.toString()
     }
 }
