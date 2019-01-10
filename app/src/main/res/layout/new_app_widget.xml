@@ -48,7 +48,7 @@
         android:layout_margin="8dp"
         android:contentDescription="@string/appwidget_text"
         android:textColor="#ffffff"
-        android:textSize="18sp"
+        android:textSize="15sp"
         android:textStyle="bold|italic" />
 
 </RelativeLayout>

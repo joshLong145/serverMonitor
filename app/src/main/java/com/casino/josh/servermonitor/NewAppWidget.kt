@@ -70,18 +70,29 @@ class NewAppWidget : AppWidgetProvider() {
             // the upper bound is relatively small ( < 100 )
             var attributes = serialStream.split(" ")
 
+            if(!attributes.contains("online") && !attributes.contains("offline")){
+                // if there is no way to parse the first line then return the whole string back
+                // this will be changed, doing this to see the kind of data being given to
+                // the function.
+                return serialStream
+            }
+
             var dataStream = StringBuilder()
+
+            dataStream.append("Last update: ")
+            var timeStamp = Date()
+            dataStream.append(timeStamp.hours.toString())
+            dataStream.append(":")
+            dataStream.append(timeStamp.minutes.toString())
+            dataStream.append("\n")
 
             dataStream.append("status: ")
             for(attr in attributes){ // search for the cpu Usage
                 if(attr.contains("online") || attr.contains("offline")){
                     dataStream.append(attr)
                     dataStream.append("\n")
-                }else{
-                    // if there is no way to parse the first line then return the whole string back
-                    // this will be changed, doing this to see the kind of data being given to
-                    // the function.
-                    return serialStream
+                    // break out of the loop once found.
+                    break
                 }
             }
 
@@ -90,6 +101,8 @@ class NewAppWidget : AppWidgetProvider() {
                 if(attr.contains("%")){
                     dataStream.append(attr)
                     dataStream.append("\n")
+                    // break out of the loop once found.
+                    break
                 }
             }
 
@@ -97,12 +110,17 @@ class NewAppWidget : AppWidgetProvider() {
             for(attr in attributes){ // search for the cpu Usage
                 if(attr.contains(".")){
                     dataStream.append(attr)
+
                 }
 
                 if(attr.contains("MB")) {
                     dataStream.append(" MB")
+                    // break out of the loop once found.
+                    break
                 }else if(attr.contains("GB")){
                     dataStream.append(" GB")
+                    // break out of the loop once found.
+                    break
                 }
             }
 
