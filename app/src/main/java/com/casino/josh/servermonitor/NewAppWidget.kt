@@ -42,8 +42,9 @@ class NewAppWidget : AppWidgetProvider() {
 
         val ip = preferences.getString("ip_address", "")
         val pass = preferences.getString("password", "")
+        val processName = preferences.getString("process", "")
 
-        val data = executeRemoteCommand("root", pass, ip)
+        val data = executeRemoteCommand("root", pass, ip, processName)
 
         views.setTextViewText(R.id.appwidget_text, data[0])
         views.setTextViewText(R.id.appwidget_ip_address, ip)
@@ -127,15 +128,16 @@ class NewAppWidget : AppWidgetProvider() {
             return dataStream.toString()
         }
 
-        private fun executeRemoteCommand(username: String,
-                                        password: String,
-                                        hostname: String,
+        private fun executeRemoteCommand(username : String,
+                                        password : String,
+                                        hostname : String,
+                                        process : String,
                                         port: Int = 22) : List<String> {
 
             val conn = SshConnectionUtility()
 
             // TODO: abstract user option, root user terrible option.
-            conn.initConnectionParams("root", hostname, password)
+            conn.initConnectionParams(username, hostname, password, process)
 
             val thrd = Thread(conn)
             thrd.start()
@@ -160,8 +162,9 @@ class NewAppWidget : AppWidgetProvider() {
             val preferences = PreferenceManager.getDefaultSharedPreferences(context)
             val ip = preferences.getString("ip_address", "")
             val pass = preferences.getString("password", "")
+            val process = preferences.getString("process", "")
 
-            val data = executeRemoteCommand("root", pass, ip)
+            val data = executeRemoteCommand("root", pass, ip, process)
 
             views.setTextViewText(R.id.appwidget_text, data[0])
             views.setTextViewText(R.id.appwidget_ip_address, ip)

@@ -10,13 +10,19 @@ class SshConnectionUtility() :  Runnable {
     private var username : String = ""
     private var hostname : String = ""
     private var password : String = ""
+    private var processName : String = ""
     private var port : Int = 0
     private var outputData : MutableList<String> = mutableListOf()
 
-    fun initConnectionParams(user : String, host : String, pass : String, port : Int = 22) {
+    fun initConnectionParams(user : String,
+                             host : String,
+                             pass : String,
+                             process : String,
+                             port : Int = 22) {
         username = user
         hostname = host
         password = pass
+        processName = process
         this.port = port
     }
 
@@ -40,7 +46,7 @@ class SshConnectionUtility() :  Runnable {
         session.connect()
 
         // predefined commands for pm2 logistics based on my personal needs.
-        val commands = arrayOf("pm2 status | grep API | tr -d '\\200-\\377'",
+        val commands = arrayOf("pm2 status | grep $processName | tr -d '\\200-\\377'",
                                 "tail -n 1 < ~/.pm2/logs/API-out.log")
 
         // Run all commands within the commands array.
