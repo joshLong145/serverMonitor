@@ -47,7 +47,7 @@ class SshConnectionUtility() :  Runnable {
 
         // predefined commands for pm2 logistics based on my personal needs.
         val commands = arrayOf("pm2 status | grep $processName | tr -d '\\200-\\377'",
-                                "tail -n 1 < ~/.pm2/logs/API-out.log")
+                                "tail -n 1 < ~/backups/output.log")
 
         // Run all commands within the commands array.
         // TODO: abstract commands to shared prefs
