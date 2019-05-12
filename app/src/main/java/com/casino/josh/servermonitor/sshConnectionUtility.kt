@@ -1,8 +1,11 @@
 package com.casino.josh.servermonitor;
 
+import android.widget.Toast
 import com.jcraft.jsch.ChannelExec
 import com.jcraft.jsch.JSch
 import java.io.ByteArrayOutputStream
+import java.io.OutputStream
+import java.lang.Exception
 import java.util.*
 
 class SshConnectionUtility() :  Runnable {
@@ -46,33 +49,36 @@ class SshConnectionUtility() :  Runnable {
         session.connect()
 
         // predefined commands for pm2 logistics based on my personal needs.
-        val commands = arrayOf("pm2 status | grep $processName | tr -d '\\200-\\377'",
-                                "tail -n 1 < ~/backups/output.log")
+        val commands = arrayOf("pm2 status | grep API | tr -d '\\200-\\377'",
+                "tail -n 1 < ~/backups/output.log")
 
         // Run all commands within the commands array.
         // TODO: abstract commands to shared prefs
-        for(command : String in commands) {
-            // Create SSH Channel.
-            val sshChannel = session.openChannel("exec") as ChannelExec
-            val outputStream = ByteArrayOutputStream()
-            sshChannel.outputStream = outputStream
+        try {
+            for (command: String in commands) {
+                // Create SSH Channel.
+                val sshChannel = session.openChannel("exec") as ChannelExec
+                val outputStream = ByteArrayOutputStream()
+                sshChannel.outputStream = outputStream
 
-            // Execute command.
-            // Command is a grep and replace on pm2 status information
-            // for custom pm2 process.
-            sshChannel.setCommand(command)
-            sshChannel.connect()
+                // Execute command.
+                // Command is a grep and replace on pm2 status information
+                // for custom pm2 process.
+                sshChannel.setCommand(command)
+                sshChannel.connect()
 
-            // Sleep needed in order to wait long enough to get result back.
-            Thread.sleep(1_000)
+                // Sleep needed in order to wait long enough to get result back.
+                Thread.sleep(1_000)
 
-            // Disconnect from the ssh session after we are done.
-            sshChannel.disconnect()
+                // Disconnect from the ssh session after we are done.
+                sshChannel.disconnect()
 
-            outputData.add(outputStream.toString())
+                outputData.add(outputStream.toString())
+            }
+        } catch(error: Exception) {
+            throw error;
         }
 
         session.disconnect()
-
     }
 }

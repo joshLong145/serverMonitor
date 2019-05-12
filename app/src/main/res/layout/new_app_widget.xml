@@ -12,7 +12,7 @@
         android:layout_margin="8dp"
         android:contentDescription="@string/appwidget_text"
         android:textColor="#01d2f7"
-        android:textSize="24sp"
+        android:textSize="14sp"
         android:textStyle="bold|italic" />
 
     <TextView
@@ -24,7 +24,7 @@
         android:layout_margin="8dp"
         android:contentDescription="@string/appwidget_text"
         android:textColor="#ffffff"
-        android:textSize="18sp"
+        android:textSize="12sp"
         android:textStyle="bold|italic" />
 
     <TextView
@@ -36,7 +36,7 @@
         android:layout_margin="8dp"
         android:contentDescription="@string/appwidget_text"
         android:textColor="#01d2f7"
-        android:textSize="18sp"
+        android:textSize="12sp"
         android:textStyle="bold|italic" />
 
     <TextView
@@ -48,7 +48,7 @@
         android:layout_margin="8dp"
         android:contentDescription="@string/appwidget_text"
         android:textColor="#ffffff"
-        android:textSize="15sp"
+        android:textSize="12sp"
         android:textStyle="bold|italic" />
 
 </RelativeLayout>

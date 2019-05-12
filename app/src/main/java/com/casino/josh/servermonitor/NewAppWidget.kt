@@ -12,6 +12,7 @@ import com.jcraft.jsch.ChannelExec
 import java.io.ByteArrayOutputStream
 import java.util.*
 import android.content.ComponentName
+import android.widget.Toast
 import java.lang.StringBuilder
 
 
@@ -133,22 +134,29 @@ class NewAppWidget : AppWidgetProvider() {
                                         hostname : String,
                                         process : String,
                                         port: Int = 22) : List<String> {
+            var data: MutableList<String>;
 
-            val conn = SshConnectionUtility()
+            try {
+                val conn = SshConnectionUtility()
 
-            // TODO: abstract user option, root user terrible option.
-            conn.initConnectionParams(username, hostname, password, process)
+                // TODO: abstract user option, root user terrible option.
+                conn.initConnectionParams(username, hostname, password, process)
 
-            val thrd = Thread(conn)
-            thrd.start()
+                val thrd = Thread(conn)
+                thrd.start()
 
-            while(thrd.isAlive){} // halt execution until thread finishes running.
+                while (thrd.isAlive) {
+                } // halt execution until thread finishes running.
 
-            val data = conn.getData()
+                data = conn.getData()
 
-            // Data parsed from bash grep chain server side.
-            // TODO: abstract so other functionality other than pm2 data parsing can be utilized.
-            data[0] = parsePMData(data[0])
+                // Data parsed from bash grep chain server side.
+                // TODO: abstract so other functionality other than pm2 data parsing can be utilized.
+                data[0] = parsePMData(data[0])
+            } catch(error: Error) {
+                data = mutableListOf()
+                data.add(0, error.message.toString())
+            }
 
             return data
         }
