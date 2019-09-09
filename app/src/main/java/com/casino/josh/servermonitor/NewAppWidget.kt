@@ -14,14 +14,15 @@ import java.util.*
 import android.content.ComponentName
 import android.widget.Toast
 import java.lang.StringBuilder
+import java.time.Instant
+import java.time.ZoneOffset
+import java.time.format.DateTimeFormatter
 
 
 /**
  * Implementation of App Widget functionality.
  */
 class NewAppWidget : AppWidgetProvider() {
-
-
     override fun onUpdate(context: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray) {
         // There may be multiple widgets active, so update all of them
 
@@ -81,11 +82,11 @@ class NewAppWidget : AppWidgetProvider() {
 
             var dataStream = StringBuilder()
 
-            dataStream.append("Last update: ")
-            var timeStamp = Date()
-            dataStream.append(timeStamp.hours.toString())
-            dataStream.append(":")
-            dataStream.append(timeStamp.minutes.toString())
+            dataStream.append("Recent backup log:\n")
+            dataStream.append(DateTimeFormatter
+                    .ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS")
+                    .withZone(ZoneOffset.UTC)
+                    .format(Instant.now()))
             dataStream.append("\n")
 
             dataStream.append("status: ")
@@ -163,6 +164,18 @@ class NewAppWidget : AppWidgetProvider() {
 
         internal fun updateAppWidget(context: Context, appWidgetManager: AppWidgetManager,
                                      appWidgetId: Int) {
+            val quotes = mutableListOf<String>(
+                    "Sometimes the worst place you can be at is in your own head",
+                    "ou may have to fight a battle more than once",
+                    "You can't control everything. \n Sometimes you just need to relax and have faith that things will work out.",
+                    "I know you're tired. \n I know you're physically and emotionally drained, \n but you have to keep going",
+                    "My feelings are valid",
+                    "Recovery is not one and done. \n It is a lifelong journey that takes place one day, \n one step at a time"
+            );
+
+            fun IntRange.random() =
+                    Random().nextInt((endInclusive + 1) - start) + start
+
             // Construct the RemoteViews object
             val views = RemoteViews(context.packageName, R.layout.new_app_widget)
 
@@ -176,7 +189,7 @@ class NewAppWidget : AppWidgetProvider() {
 
             views.setTextViewText(R.id.appwidget_text, data[0])
             views.setTextViewText(R.id.appwidget_ip_address, ip)
-            views.setTextViewText(R.id.appwidget_logs, data[1])
+            views.setTextViewText(R.id.appwidget_logs, quotes.get((0..5).random()))
             views.setTextViewText(R.id.appwidget_log_header, "Last log entry:")
 
             AppWidgetManager.getInstance(context).updateAppWidget(appWidgetId, views)
